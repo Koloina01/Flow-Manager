@@ -1,0 +1,60 @@
+datasource db {
+  provider = "postgresql"
+}
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+
+model User {
+  id        Int      @id @default(autoincrement())
+  name      String
+  email     String   @unique
+  password  String
+  role      Role     @default(USER)
+  createdAt DateTime @default(now())
+}
+
+model Prospect {
+  id        Int      @id @default(autoincrement())
+  firstName String
+  lastName  String
+  email     String   @unique
+  phone     String?
+  status    ProspectStatus @default(NEW)
+  createdAt DateTime @default(now())
+  appointments Appointment[]
+}
+
+model Appointment {
+  id          Int       @id @default(autoincrement())
+  date        DateTime
+  description String?
+  status      AppointmentStatus @default(PENDING)
+  prospect    Prospect  @relation(fields: [prospectId], references: [id])
+  prospectId  Int
+  createdAt   DateTime  @default(now())
+}
+
+enum Role {
+  USER
+  ADMIN
+}
+
+enum ProspectStatus {
+  NEW
+  CONTACTED
+  INTERESTED
+  CONVERTED
+  ABANDONED
+}
+
+enum AppointmentStatus {
+  PENDING
+  ACCEPTED
+  REFUSED
+  COMPLETED
+  MISSED
+}
+
